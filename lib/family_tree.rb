@@ -83,7 +83,7 @@ class FamilyTree
 
     case relationship.downcase
     when 'child'
-      children.map(&:name).join(' ')
+      children.empty? ? 'NONE' : children.map(&:name).join(' ')
     when 'son'
       sons = children.select { |child| child.gender == Gender::MALE }
       sons.empty? ? 'NONE' : sons.map(&:name).join(' ')
