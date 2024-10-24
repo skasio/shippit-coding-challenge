@@ -2,18 +2,20 @@
 
 require 'singleton'
 
+require_relative 'family_tree'
+
 class FamilyTreeManager
   include Singleton
 
   def initialize
-    @family_members = {}
+    @family_tree = FamilyTree.new
   end
 
   def add_child(*params)
-    puts "Adding Child with params: #{params.join(', ')}"
+    @family_tree.add_child(*params)
   end
 
   def query_hierarchy(*params)
-    puts "Querying Hierarcy with params: #{params.join(', ')}"
+    @family_tree.query_hierarchy(*params)
   end
 end
