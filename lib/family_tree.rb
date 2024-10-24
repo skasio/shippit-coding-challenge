@@ -95,10 +95,10 @@ class FamilyTree
     end
   end
 
-  def handle_uncle_relationship(child_of_family, type)
+  def handle_sibling_relationship(child_of_family, type, side)
     return 'NONE' if child_of_family.nil?
 
-    parent = type == 'paternal' ? child_of_family.father : child_of_family.mother
+    parent = side == 'paternal' ? child_of_family.father : child_of_family.mother
     return 'NONE' if parent.nil? || parent.is_a?(NilPerson)
 
     # Find the family where the parent is a child
@@ -110,29 +110,25 @@ class FamilyTree
     # Find the siblings of the parent
     siblings = find_siblings(parent_family, parent.name)
 
-    # Select male siblings (uncles)
-    uncles = siblings.select { |sibling| sibling.gender == Gender::MALE }
-    uncles.empty? ? 'NONE' : uncles.map(&:name).join(' ')
+    # Select based on sibling gender
+    relatives = case type
+                when 'uncle'
+                  siblings.select { |sibling| sibling.gender == Gender::MALE }
+                when 'aunt'
+                  siblings.select { |sibling| sibling.gender == Gender::FEMALE }
+                else
+                  []
+                end
+
+    relatives.empty? ? 'NONE' : relatives.map(&:name).join(' ')
+  end
+
+  def handle_uncle_relationship(child_of_family, type)
+    handle_sibling_relationship(child_of_family, 'uncle', type)
   end
 
   def handle_aunt_relationship(child_of_family, type)
-    return 'NONE' if child_of_family.nil?
-
-    parent = type == 'paternal' ? child_of_family.father : child_of_family.mother
-    return 'NONE' if parent.nil? || parent.is_a?(NilPerson)
-
-    # Find the family where the parent is a child
-    parent_result = find_person_in_families(parent.name)
-    parent_family = parent_result[:child_of_family]
-
-    return 'NONE' if parent_family.nil?
-
-    # Find the siblings of the parent
-    siblings = find_siblings(parent_family, parent.name)
-
-    # Select female siblings (aunts)
-    aunts = siblings.select { |sibling| sibling.gender == Gender::FEMALE }
-    aunts.empty? ? 'NONE' : aunts.map(&:name).join(' ')
+    handle_sibling_relationship(child_of_family, 'aunt', type)
   end
 
   def handle_sister_in_law_relationship(person, child_of_family)
