@@ -136,57 +136,38 @@ class FamilyTree
   end
 
   def handle_sister_in_law_relationship(person, child_of_family)
-    sisters_in_law = []
-
-    # Check for female siblings of the spouse
-    if person.spouse.is_a?(Person)
-      spouse_result = find_person_in_families(person.spouse.name)
-      spouse_family = spouse_result[:child_of_family]
-
-      if spouse_family
-        spouse_siblings = find_siblings(spouse_family, person.spouse.name)
-        sisters_in_law.concat(spouse_siblings.select { |sibling| sibling.gender == Gender::FEMALE }.map(&:name))
-      end
-    end
-
-    unless child_of_family.nil?
-      # Check for female spouses of siblings of the person
-      siblings = find_siblings(child_of_family, person.name)
-
-      siblings.each do |sibling|
-        sisters_in_law << sibling.spouse.name if sibling.spouse && sibling.spouse.gender == Gender::FEMALE
-      end
-    end
-
-    sisters_in_law.uniq!
-    sisters_in_law.empty? ? 'NONE' : sisters_in_law.join(' ')
+    find_in_laws(person, child_of_family, Gender::FEMALE)
   end
 
   def handle_brother_in_law_relationship(person, child_of_family)
-    brothers_in_law = []
+    find_in_laws(person, child_of_family, Gender::MALE)
+  end
 
-    # Check for male siblings of the spouse
+  def find_in_laws(person, child_of_family, gender)
+    in_laws = []
+
+    # Check for siblings of the spouse
     if person.spouse.is_a?(Person)
       spouse_result = find_person_in_families(person.spouse.name)
       spouse_family = spouse_result[:child_of_family]
 
       if spouse_family
         spouse_siblings = find_siblings(spouse_family, person.spouse.name)
-        brothers_in_law.concat(spouse_siblings.select { |sibling| sibling.gender == Gender::MALE }.map(&:name))
+        in_laws.concat(spouse_siblings.select { |sibling| sibling.gender == gender }.map(&:name))
       end
     end
 
     unless child_of_family.nil?
-      # Check for male spouses of siblings of the person
+      # Check for spouses of siblings of the person
       siblings = find_siblings(child_of_family, person.name)
 
       siblings.each do |sibling|
-        brothers_in_law << sibling.spouse.name if sibling.spouse && sibling.spouse.gender == Gender::MALE
+        in_laws << sibling.spouse.name if sibling.spouse && sibling.spouse.gender == gender
       end
     end
 
-    brothers_in_law.uniq!
-    brothers_in_law.empty? ? 'NONE' : brothers_in_law.join(' ')
+    in_laws.uniq!
+    in_laws.empty? ? 'NONE' : in_laws.join(' ')
   end
 
   def find_person_in_families(name)
