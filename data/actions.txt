@@ -1,21 +1,18 @@
 
-
 GET_RELATIONSHIP "Hugo" "Paternal-Uncle"
 GET_RELATIONSHIP "Hugo" "Paternal-Aunt"
+#
 GET_RELATIONSHIP "Albus" "Maternal-Uncle"
 GET_RELATIONSHIP "Remus" "Maternal-Aunt"
-
+#
 GET_RELATIONSHIP "Ted" "Sister-in-Law"
 GET_RELATIONSHIP "Percy" "Sister-in-Law"
 GET_RELATIONSHIP "Charlie" "Sister-in-Law"
-
-
+#
 GET_RELATIONSHIP "Percy" "Brother-in-Law"
 GET_RELATIONSHIP "Charlie" "Brother-in-Law"
-
 GET_RELATIONSHIP "Ted" "Brother-in-Law"
-
-
+#
 GET_RELATIONSHIP "King Arthur" "Mother"
 GET_RELATIONSHIP "Bill" "Mother"
 GET_RELATIONSHIP "Charlie" "Mother"
@@ -46,18 +43,15 @@ GET_RELATIONSHIP "William" "Mother"
 GET_RELATIONSHIP "Alice" "Mother"
 GET_RELATIONSHIP "Ron" "Mother"
 GET_RELATIONSHIP "Ginny" "Mother"
-
 GET_RELATIONSHIP "Molly" "Father"
 
 GET_RELATIONSHIP "Bill" "Siblings"
-ADD_CHILD "Victoire" "Fred" "Male"
-ADD_CHILD "Ted" "Fred" "Male"
-#
-GET_RELATIONSHIP "Alice" "Mother"
 
+GET_RELATIONSHIP "King Arthur" "Child"
 
-ADD_CHILD "Victoire" "Fred" "Male"
-ADD_CHILD "Ted" "Fred" "Male"
-
-
+GET_RELATIONSHIP "King Arthur" "Son"
 GET_RELATIONSHIP "King Arthur" "Daughter"
+GET_RELATIONSHIP "Charlie" "Son"
+#
+ADD_CHILD "Victoire" "Fred" "Male"
+ADD_CHILD "Ted" "Fred" "Male"
