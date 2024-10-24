@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'family_tree_manager'
+
 class ActionFileExecutor
   def initialize(file_path)
     @file_path = file_path
@@ -10,7 +12,14 @@ class ActionFileExecutor
     File.open(@file_path, 'r') do |file|
       file.each_line do |line|
         action, *params = line.split(' ')
-        puts "Executing action: #{action} with params: #{params.join(', ')}"
+        case action
+        when 'ADD_CHILD'
+          FamilyTreeManager.instance.add_child(*params)
+        when 'GET_RELATIONSHIP'
+          FamilyTreeManager.instance.query_hierarchy(*params)
+        else
+          puts "Ignoring unsupported action: [#{action}]"
+        end
       end
     end
   end

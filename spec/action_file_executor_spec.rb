@@ -2,14 +2,17 @@
 
 require 'tempfile'
 require_relative '../lib/action_file_executor'
+require_relative '../lib/family_tree_manager'
 
 RSpec.describe ActionFileExecutor do
-  let(:tempfile) { Tempfile.new('actions.txt') }
   let(:invalid_file_path) { 'non_existent_file.txt' }
+  let(:family_tree_manager) { instance_double('FamilyTreeManager') }
+  let(:tempfile) { Tempfile.new('actions.txt') }
 
   before do
-    tempfile.write('ADD_CHILD Mother Child Male')
-    tempfile.rewind
+    allow(FamilyTreeManager).to receive(:instance).and_return(family_tree_manager)
+    allow(family_tree_manager).to receive(:add_child)
+    allow(family_tree_manager).to receive(:query_hierarchy)
   end
 
   after do
@@ -28,6 +31,9 @@ RSpec.describe ActionFileExecutor do
 
     context 'when the file exists' do
       it 'initializes successfully' do
+        tempfile.puts('ADD_CHILD Mother Child Male')
+        tempfile.rewind
+
         action_file_executor = ActionFileExecutor.new(tempfile.path)
         expect(action_file_executor).to be_an_instance_of(ActionFileExecutor)
       end
@@ -35,11 +41,38 @@ RSpec.describe ActionFileExecutor do
   end
 
   describe '#execute_actions' do
-    it 'prints message indicating action being executed and the parameters which were passed' do
-      action_file_executor = ActionFileExecutor.new(tempfile.path)
-      expect do
+    context 'with valid actions' do
+      before do
+        tempfile.puts('ADD_CHILD Mother Child Male')
+        tempfile.puts('GET_RELATIONSHIP Child Maternal-Uncle')
+        tempfile.rewind
+      end
+
+      it 'calls the add_child method on FamilyTreeManager when it encounters the ADD_CHILD action' do
+        action_file_executor = ActionFileExecutor.new(tempfile.path)
         action_file_executor.execute_actions
-      end.to output("Executing action: ADD_CHILD with params: Mother, Child, Male\n").to_stdout
+        expect(family_tree_manager).to have_received(:add_child).with('Mother', 'Child', 'Male')
+      end
+
+      it 'calls the query_hierarchy method on FamilyTreeManager when it encounters the GET_RELATIONSHIP action' do
+        action_file_executor = ActionFileExecutor.new(tempfile.path)
+        action_file_executor.execute_actions
+        expect(family_tree_manager).to have_received(:query_hierarchy).with('Child', 'Maternal-Uncle')
+      end
+    end
+
+    context 'with unsupported actions' do
+      before do
+        tempfile.puts('ADD_MOTHER Child Mother')
+        tempfile.rewind
+      end
+
+      it 'prints an error message when it encounters an unsupported action' do
+        expect do
+          action_file_executor = ActionFileExecutor.new(tempfile.path)
+          action_file_executor.execute_actions
+        end.to output("Ignoring unsupported action: [ADD_MOTHER]\n").to_stdout
+      end
     end
   end
 end
