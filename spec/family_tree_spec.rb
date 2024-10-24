@@ -24,18 +24,15 @@ RSpec.describe FamilyTree do
 
     it 'does not add a duplicate family' do
       FamilyTree.instance.add_family(family)
-      FamilyTree.instance.add_family(family)
-      expect(FamilyTree.instance.families.count).to eq(1)
+      expect { FamilyTree.instance.add_family(family) }.not_to(change { FamilyTree.instance.families.count })
     end
   end
 
   describe '#add_child' do
-    before do
-      FamilyTree.instance.add_family(family)
-    end
+    before { FamilyTree.instance.add_family(family) }
 
     context 'when the mother is present' do
-      it 'adds a child to the family' do
+      it 'successfully adds a child to the family' do
         result = FamilyTree.instance.add_child(mother.name, 'Charlie', Gender::FEMALE)
         expect(result).to eq('CHILD_ADDED')
         expect(family.children.last.name).to eq('Charlie')
@@ -50,8 +47,8 @@ RSpec.describe FamilyTree do
     end
 
     context 'when the mother is not present' do
-      it 'returns CHILD_ADDITION_FAILED' do
-        FamilyTree.instance.families.clear # Remove existing families
+      it 'fails to add a child and returns CHILD_ADDITION_FAILED' do
+        FamilyTree.instance.families.clear # Clear existing families
         result = FamilyTree.instance.add_child('Unknown Mother', 'Charlie', Gender::FEMALE)
         expect(result).to eq('CHILD_ADDITION_FAILED')
       end
@@ -59,14 +56,15 @@ RSpec.describe FamilyTree do
   end
 
   describe '#get_relationship' do
-    before do
-      FamilyTree.instance.add_family(family)
-    end
+    before { FamilyTree.instance.add_family(family) }
 
-    context 'when finding mother' do
-      it 'returns the mother if present' do
-        result = FamilyTree.instance.get_relationship('Anna', 'mother')
-        expect(result).to eq(mother.name)
+    context 'finding parents' do
+      it 'returns the mother\'s name if present' do
+        expect(FamilyTree.instance.get_relationship('Anna', 'mother')).to eq(mother.name)
+      end
+
+      it 'returns the father\'s name if present' do
+        expect(FamilyTree.instance.get_relationship('Anna', 'father')).to eq(father.name)
       end
 
       it 'returns PERSON_NOT_FOUND if the person has no mother' do
@@ -74,15 +72,7 @@ RSpec.describe FamilyTree do
         FamilyTree.instance.families.clear
         FamilyTree.instance.add_family(orphan_family)
 
-        result = FamilyTree.instance.get_relationship('Anna', 'mother')
-        expect(result).to eq('PERSON_NOT_FOUND')
-      end
-    end
-
-    context 'when finding father' do
-      it 'returns father\'s name if present' do
-        result = FamilyTree.instance.get_relationship('Anna', 'father')
-        expect(result).to eq(father.name)
+        expect(FamilyTree.instance.get_relationship('Anna', 'mother')).to eq('PERSON_NOT_FOUND')
       end
 
       it 'returns PERSON_NOT_FOUND if the person has no father' do
@@ -90,15 +80,13 @@ RSpec.describe FamilyTree do
         FamilyTree.instance.families.clear
         FamilyTree.instance.add_family(orphan_family)
 
-        result = FamilyTree.instance.get_relationship('Anna', 'father')
-        expect(result).to eq('PERSON_NOT_FOUND')
+        expect(FamilyTree.instance.get_relationship('Anna', 'father')).to eq('PERSON_NOT_FOUND')
       end
     end
 
-    context 'when finding siblings' do
-      it 'returns the sibling\'s name if present' do
-        result = FamilyTree.instance.get_relationship('Anna', 'siblings')
-        expect(result).to eq(child2.name)
+    context 'finding siblings' do
+      it 'returns sibling\'s name if present' do
+        expect(FamilyTree.instance.get_relationship('Anna', 'siblings')).to eq(child2.name)
       end
 
       it 'returns NONE if there are no siblings' do
@@ -106,15 +94,13 @@ RSpec.describe FamilyTree do
         FamilyTree.instance.families.clear
         FamilyTree.instance.add_family(single_child_family)
 
-        result = FamilyTree.instance.get_relationship('Anna', 'siblings')
-        expect(result).to eq('NONE')
+        expect(FamilyTree.instance.get_relationship('Anna', 'siblings')).to eq('NONE')
       end
     end
 
-    context 'when relationship type is invalid' do
-      it 'returns UNSUPPORTED_RELATIONSHIP' do
-        result = FamilyTree.instance.get_relationship('Anna', 'uncle')
-        expect(result).to eq('UNSUPPORTED_RELATIONSHIP')
+    context 'invalid relationships' do
+      it 'returns UNSUPPORTED_RELATIONSHIP for unsupported types' do
+        expect(FamilyTree.instance.get_relationship('Anna', 'uncle')).to eq('UNSUPPORTED_RELATIONSHIP')
       end
     end
   end
