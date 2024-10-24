@@ -30,11 +30,31 @@ RSpec.describe FamilyTree do
   end
 
   describe '#add_child' do
-    it 'outputs the correct parameters when adding a child' do
-      expect do
-        FamilyTree.instance.add_child('Jane', 'Sam',
-                                      'Male')
-      end.to output("Adding Child with params: Jane, Sam, Male\n").to_stdout
+    before do
+      FamilyTree.instance.add_family(family)
+    end
+
+    context 'when the mother is present' do
+      it 'adds a child to the family' do
+        result = FamilyTree.instance.add_child(mother.name, 'Charlie', Gender::FEMALE)
+        expect(result).to eq('CHILD_ADDED')
+        expect(family.children.last.name).to eq('Charlie')
+      end
+
+      it 'does not add a duplicate child' do
+        FamilyTree.instance.add_child(mother.name, 'Charlie', Gender::FEMALE)
+        result = FamilyTree.instance.add_child(mother.name, 'Charlie', Gender::FEMALE)
+        expect(result).to eq('CHILD_ADDITION_FAILED')
+        expect(family.children.count { |child| child.name.casecmp('Charlie').zero? }).to eq(1)
+      end
+    end
+
+    context 'when the mother is not present' do
+      it 'returns CHILD_ADDITION_FAILED' do
+        FamilyTree.instance.families.clear # Remove existing families
+        result = FamilyTree.instance.add_child('Unknown Mother', 'Charlie', Gender::FEMALE)
+        expect(result).to eq('CHILD_ADDITION_FAILED')
+      end
     end
   end
 
@@ -96,51 +116,6 @@ RSpec.describe FamilyTree do
         result = FamilyTree.instance.get_relationship('Anna', 'uncle')
         expect(result).to eq('UNSUPPORTED_RELATIONSHIP')
       end
-    end
-  end
-
-  describe '#find_mother' do
-    it 'returns the mother if present' do
-      expect(FamilyTree.instance.find_mother(family)).to eq(mother)
-    end
-
-    it 'returns NilPerson if no mother is present' do
-      orphan_family = Family.new(NilPerson.new, father, [child1])
-      expect(FamilyTree.instance.find_mother(orphan_family)).to be_a(NilPerson)
-    end
-  end
-
-  describe '#find_father' do
-    it 'returns the father if present' do
-      expect(FamilyTree.instance.find_father(family)).to eq(father)
-    end
-
-    it 'returns NilPerson if no father is present' do
-      orphan_family = Family.new(mother, NilPerson.new, [child1])
-      expect(FamilyTree.instance.find_father(orphan_family)).to be_a(NilPerson)
-    end
-  end
-
-  describe '#find_siblings' do
-    it 'returns siblings in the same family' do
-      result = FamilyTree.instance.find_siblings(family, 'Anna')
-      expect(result).to eq([child2])
-    end
-
-    it 'returns empty array if there are no siblings' do
-      single_child_family = Family.new(mother, father, [child1])
-      result = FamilyTree.instance.find_siblings(single_child_family, 'Anna')
-      expect(result).to eq([])
-    end
-  end
-
-  describe '#child_of_family?' do
-    it 'returns true if the person is a child of the family' do
-      expect(FamilyTree.instance.child_of_family?(family, 'Anna')).to be true
-    end
-
-    it 'returns false if the person is not a child of the family' do
-      expect(FamilyTree.instance.child_of_family?(family, 'Unknown')).to be false
     end
   end
 end

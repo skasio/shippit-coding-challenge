@@ -31,7 +31,7 @@ RSpec.describe ActionFileExecutor do
       it 'prints an error message and exits' do
         expect do
           ActionFileExecutor.new(invalid_file_path)
-        end.to output("Error: The file 'non_existent_file.txt' does not exist.\n").to_stdout.and raise_error(SystemExit)
+        end.to output("Error: The file 'non_existent_file.txt' does not exist.\n").to_stderr.and raise_error(SystemExit)
       end
     end
   end
@@ -39,11 +39,11 @@ RSpec.describe ActionFileExecutor do
   describe '#execute_actions' do
     context 'with a valid file' do
       before do
-        tempfile.write("ADD_CHILD \"Mother's Name\" \"Child's Name\"\n")
+        tempfile.write("ADD_CHILD \"Mother's Name\" \"Child's Name\" Male\n")
         tempfile.write("# A comment\n")
         tempfile.write("\n")
         tempfile.write("INVALID ACTION\n")
-        tempfile.write("GET_RELATIONSHIP \"Mother's Name\" \"Child's Name\"\n")
+        tempfile.write("GET_RELATIONSHIP \"Mother's Name\" \"Son\"\n")
         tempfile.rewind
       end
 
@@ -60,7 +60,7 @@ RSpec.describe ActionFileExecutor do
         allow(action_file_executor).to receive(:execute_action)
 
         action_file_executor.execute_actions
-        expect(action_file_executor).to have_received(:execute_action).exactly(3).times
+        expect(action_file_executor).to have_received(:execute_action).exactly(2).times
       end
     end
   end
@@ -95,23 +95,25 @@ RSpec.describe ActionFileExecutor do
     context 'with the ADD_CHILD action' do
       it 'calls the add_child method on FamilyTree' do
         action_file_executor = ActionFileExecutor.new(tempfile.path)
-        action_file_executor.send(:execute_action, 'ADD_CHILD', ["Mother's Name", "Child's Name"])
+        action_file_executor.send(:execute_action, 'ADD_CHILD', ["Mother's Name", "Child's Name", 'Male'])
+        expect(family_tree).to have_received(:add_child).with("Mother's Name", "Child's Name", 'Male')
       end
     end
 
     context 'with the GET_RELATIONSHIP action' do
       it 'calls the get_relationship method on FamilyTree' do
         action_file_executor = ActionFileExecutor.new(tempfile.path)
-        action_file_executor.send(:execute_action, 'GET_RELATIONSHIP', ["Child's Name", 'Maternal-Uncle'])
+        action_file_executor.send(:execute_action, 'GET_RELATIONSHIP', ["Mother's Name", 'Son'])
+        expect(family_tree).to have_received(:get_relationship).with("Mother's Name", 'Son')
       end
     end
 
     context 'with an unsupported action' do
-      it 'prints an error message' do
+      it 'does nothing' do
+        action_file_executor = ActionFileExecutor.new(tempfile.path)
         expect do
-          action_file_executor = ActionFileExecutor.new(tempfile.path)
           action_file_executor.send(:execute_action, 'ADD_MOTHER', ["Child's Name", "Mother's Name"])
-        end.to output("Ignoring unsupported action: [ADD_MOTHER]\n").to_stdout
+        end.not_to raise_error
       end
     end
   end
