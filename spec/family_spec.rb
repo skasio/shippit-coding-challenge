@@ -2,6 +2,7 @@
 
 require_relative '../lib/family'
 require_relative '../lib/person'
+require_relative '../lib/nil_person'
 require_relative '../lib/gender'
 
 RSpec.describe Family do
