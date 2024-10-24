@@ -1,17 +1,22 @@
 # frozen_string_literal: true
 
+require 'tempfile'
 require_relative '../lib/cli'
 
 RSpec.describe CLI do
-  let(:valid_file_path) { 'test_actions.txt' }
+  let(:tempfile) { Tempfile.new('actions.txt') }
   let(:invalid_file_path) { 'non_existent_file.txt' }
+  let(:action_file_executor) { instance_double('ActionFileExecutor') }
+  let(:args) { [tempfile.path] }
 
   before do
-    File.write(valid_file_path, 'some actions')
+    allow(ActionFileExecutor).to receive(:new).with(tempfile.path).and_return(action_file_executor)
+    allow(action_file_executor).to receive(:execute_actions)
   end
 
   after do
-    File.delete(valid_file_path) if File.exist?(valid_file_path)
+    tempfile.close
+    tempfile.unlink
   end
 
   describe '#initialize' do
@@ -33,50 +38,19 @@ RSpec.describe CLI do
 
     context 'when a valid file path is provided' do
       it 'initializes successfully' do
-        cli = CLI.new([valid_file_path])
+        cli = CLI.new([tempfile.path])
         expect(cli).to be_an_instance_of(CLI)
       end
     end
   end
 
   describe '#run' do
-    it 'prints a message that it is running actions from the actions file' do
-      expect do
-        cli = CLI.new([valid_file_path])
-        cli.run
-      end.to output(/Running actions from file: test_actions.txt against the family tree./).to_stdout
-    end
-  end
+    it 'creates an ActionFileExecutor and executes actions' do
+      cli = CLI.new(args)
+      cli.run
 
-  describe '#validate_arguments' do
-    context 'when no arguments are provided' do
-      it 'prints usage message and exits' do
-        expect do
-          CLI.new([])
-        end.to output(%r{Usage: family_tree <path/to/actions.txt>}).to_stdout.and raise_error(SystemExit)
-      end
-    end
-
-    context 'when an invalid file path is provided' do
-      it 'prints error message and exits' do
-        expect do
-          CLI.new([invalid_file_path])
-        end.to output(/Error: The file 'non_existent_file.txt' does not exist./).to_stdout.and raise_error(SystemExit)
-      end
-    end
-
-    context 'when a valid file path is provided' do
-      it 'does not print any message' do
-        expect do
-          CLI.new([valid_file_path])
-        end.not_to output.to_stdout
-      end
-
-      it 'does not raise any errors' do
-        expect do
-          CLI.new([valid_file_path])
-        end.not_to raise_error
-      end
+      expect(ActionFileExecutor).to have_received(:new).with(tempfile.path)
+      expect(action_file_executor).to have_received(:execute_actions)
     end
   end
 end
