@@ -8,11 +8,10 @@ require_relative 'family_factory'
 class FamilyTree
   include Singleton
 
-  attr_accessor :families, :people
+  attr_accessor :families
 
   def initialize
     @families = FamilyFactory.new.create_families
-    @people = []
   end
 
   def add_family(family)
@@ -24,35 +23,38 @@ class FamilyTree
   end
 
   def get_relationship(name, relationship)
-    family = find_family(name)
+    result = find_person_and_family(name)
+    person = result[:person]
+    family = result[:family]
 
-    return [] if family.nil?
+    return 'PERSON_NOT_FOUND' if family.nil? || person.is_a?(NilPerson)
 
-    if child_of_family?(family, name)
-      case relationship.downcase
-      when 'mother'
-        mother = find_mother(family)
-        return mother.is_a?(NilPerson) ? [] : [mother]
-      when 'father'
-        father = find_father(family)
-        return father.is_a?(NilPerson) ? [] : [father]
-      when 'siblings'
-        return find_siblings(family, name)
-      else
-        return []
-      end
+    case relationship.downcase
+    when 'mother'
+      mother = find_mother(family)
+      return 'PERSON_NOT_FOUND' if mother.is_a?(NilPerson)
+
+      mother.name
+    when 'father'
+      father = find_father(family)
+      return 'PERSON_NOT_FOUND' if father.is_a?(NilPerson)
+
+      father.name
+    when 'siblings'
+      siblings = find_siblings(family, name)
+      siblings.empty? ? 'NONE' : siblings.map(&:name).join(' ')
+    else
+      'UNSUPPORTED_RELATIONSHIP'
     end
-
-    []
   end
 
-  def find_family(name)
+  def find_person_and_family(name)
     families.each do |family|
       family.children.each do |child|
-        return family if child.name.casecmp(name).zero?
+        return { person: child, family: family } if child.name.casecmp(name).zero?
       end
     end
-    nil
+    { person: NilPerson.new, family: nil }
   end
 
   def find_mother(family)

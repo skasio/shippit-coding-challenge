@@ -4,6 +4,7 @@ require 'singleton'
 
 class RelationshipManager
   include Singleton
+
   def link_spouses(person1, person2)
     # Check if either person is already linked to someone else
     if person1.spouse != NilPerson.new && person1.spouse != person2
