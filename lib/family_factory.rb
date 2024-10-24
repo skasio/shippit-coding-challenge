@@ -3,7 +3,6 @@
 require_relative 'family'
 require_relative 'person'
 require_relative 'gender'
-require_relative 'relationship_manager'
 
 # FamilyFactory class to create initial families for the FamilyTree.
 # The primary purpose of this class is to create and initialize predefined families.
@@ -12,7 +11,6 @@ class FamilyFactory
   # Sets up a hash to store people and gets the singleton instance of RelationshipManager.
   def initialize
     @people = {}
-    @relationship_manager = RelationshipManager.instance
   end
 
   # Creates and returns an array of predefined families.
@@ -63,6 +61,27 @@ class FamilyFactory
     find_or_create_person(name, Gender::FEMALE)
   end
 
+  # Links two people as spouses.
+  #
+  # @param person1 [Person] The first person to link.
+  # @param person2 [Person] The second person to link.
+  # @raise [RuntimeError] if either person is already linked to someone else.
+  # @return [void]
+  def link_spouses(person1, person2)
+    # Check if either person is already linked to someone else
+    if person1.spouse != NilPerson.new && person1.spouse != person2
+      raise "Cannot link #{person1.name} and #{person2.name}: #{person1.name} is already linked to #{person1.spouse.name}."
+    end
+
+    if person2.spouse != NilPerson.new && person2.spouse != person1
+      raise "Cannot link #{person1.name} and #{person2.name}: #{person2.name} is already linked to #{person2.spouse.name}."
+    end
+
+    # Link the spouses
+    person1.spouse = person2
+    person2.spouse = person1 unless person2.is_a?(NilPerson)
+  end
+
   # Creates the family of Queen Margaret and King Arthur.
   #
   # @return [Family] The created Family object.
@@ -70,7 +89,7 @@ class FamilyFactory
     queen_margaret = find_or_create_female('Queen Margaret')
     king_arthur = find_or_create_male('King Arthur')
 
-    @relationship_manager.link_spouses(queen_margaret, king_arthur)
+    link_spouses(queen_margaret, king_arthur)
 
     bill = find_or_create_male('Bill')
     charlie = find_or_create_male('Charlie')
@@ -88,7 +107,7 @@ class FamilyFactory
     bill = find_or_create_male('Bill')
     flora = find_or_create_female('Flora')
 
-    @relationship_manager.link_spouses(flora, bill)
+    link_spouses(flora, bill)
 
     victoire = find_or_create_female('Victoire')
     dominique = find_or_create_female('Dominique')
@@ -104,7 +123,7 @@ class FamilyFactory
     victoire = find_or_create_female('Victoire')
     ted = find_or_create_male('Ted')
 
-    @relationship_manager.link_spouses(victoire, ted)
+    link_spouses(victoire, ted)
 
     remus = find_or_create_male('Remus')
 
@@ -118,7 +137,7 @@ class FamilyFactory
     percy = find_or_create_male('Percy')
     audrey = find_or_create_female('Audrey')
 
-    @relationship_manager.link_spouses(audrey, percy)
+    link_spouses(audrey, percy)
 
     molly = find_or_create_female('Molly')
     lucy = find_or_create_female('Lucy')
@@ -133,7 +152,7 @@ class FamilyFactory
     ronald = find_or_create_male('Ronald')
     helen = find_or_create_female('Helen')
 
-    @relationship_manager.link_spouses(helen, ronald)
+    link_spouses(helen, ronald)
 
     rose = find_or_create_female('Rose')
     hugo = find_or_create_male('Hugo')
@@ -148,7 +167,7 @@ class FamilyFactory
     malfoy = find_or_create_male('Malfoy')
     rose = find_or_create_female('Rose')
 
-    @relationship_manager.link_spouses(rose, malfoy)
+    link_spouses(rose, malfoy)
 
     draco = find_or_create_male('Draco')
     aster = find_or_create_female('Aster')
@@ -163,7 +182,7 @@ class FamilyFactory
     ginerva = find_or_create_female('Ginerva')
     harry = find_or_create_male('Harry')
 
-    @relationship_manager.link_spouses(ginerva, harry)
+    link_spouses(ginerva, harry)
 
     james = find_or_create_male('James')
     albus = find_or_create_male('Albus')
@@ -179,7 +198,7 @@ class FamilyFactory
     darcy = find_or_create_female('Darcy')
     james = find_or_create_male('James')
 
-    @relationship_manager.link_spouses(darcy, james)
+    link_spouses(darcy, james)
 
     william = find_or_create_male('William')
 
@@ -193,7 +212,7 @@ class FamilyFactory
     alice = find_or_create_female('Alice')
     albus = find_or_create_male('Albus')
 
-    @relationship_manager.link_spouses(alice, albus)
+    link_spouses(alice, albus)
 
     ron = find_or_create_male('Ron')
     ginny = find_or_create_female('Ginny')
