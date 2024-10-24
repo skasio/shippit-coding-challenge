@@ -38,4 +38,36 @@ RSpec.describe CLI do
       end
     end
   end
+
+  describe '#validate_arguments' do
+    context 'when no arguments are provided' do
+      it 'prints usage message and exits' do
+        expect do
+          CLI.new([])
+        end.to output(%r{Usage: family_tree <path/to/actions.txt>}).to_stdout.and raise_error(SystemExit)
+      end
+    end
+
+    context 'when an invalid file path is provided' do
+      it 'prints error message and exits' do
+        expect do
+          CLI.new([invalid_file_path])
+        end.to output(/Error: The file 'non_existent_file.txt' does not exist./).to_stdout.and raise_error(SystemExit)
+      end
+    end
+
+    context 'when a valid file path is provided' do
+      it 'does not print any message' do
+        expect do
+          CLI.new([valid_file_path])
+        end.not_to output.to_stdout
+      end
+
+      it 'does not raise any errors' do
+        expect do
+          CLI.new([valid_file_path])
+        end.not_to raise_error
+      end
+    end
+  end
 end
