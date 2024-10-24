@@ -39,6 +39,15 @@ RSpec.describe CLI do
     end
   end
 
+  describe '#run' do
+    it 'prints a message that it is running actions from the actions file' do
+      expect do
+        cli = CLI.new([valid_file_path])
+        cli.run
+      end.to output(/Running actions from file: test_actions.txt against the family tree./).to_stdout
+    end
+  end
+
   describe '#validate_arguments' do
     context 'when no arguments are provided' do
       it 'prints usage message and exits' do
