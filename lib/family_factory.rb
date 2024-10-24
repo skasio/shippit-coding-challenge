@@ -5,12 +5,19 @@ require_relative 'person'
 require_relative 'gender'
 require_relative 'relationship_manager'
 
+# FamilyFactory class to create initial families for the FamilyTree.
+# The primary purpose of this class is to create and initialize predefined families.
 class FamilyFactory
+  # Initializes a new FamilyFactory object.
+  # Sets up a hash to store people and gets the singleton instance of RelationshipManager.
   def initialize
     @people = {}
     @relationship_manager = RelationshipManager.instance
   end
 
+  # Creates and returns an array of predefined families.
+  #
+  # @return [Array<Family>] An array of predefined Family objects.
   def create_families
     [
       create_queen_margaret_and_king_arthur_family,
@@ -27,21 +34,38 @@ class FamilyFactory
 
   private
 
+  # Finds or creates a person with the given name and gender.
+  #
+  # @param name [String] The name of the person.
+  # @param gender [String] The gender of the person.
+  # @return [Person] The found or created Person object.
   def find_or_create_person(name, gender)
     return @people[name] if @people.key?(name)
 
     person = Person.new(name, gender)
     @people[name] = person
+    person
   end
 
+  # Finds or creates a male person with the given name.
+  #
+  # @param name [String] The name of the male person.
+  # @return [Person] The found or created male Person object.
   def find_or_create_male(name)
     find_or_create_person(name, Gender::MALE)
   end
 
+  # Finds or creates a female person with the given name.
+  #
+  # @param name [String] The name of the female person.
+  # @return [Person] The found or created female Person object.
   def find_or_create_female(name)
     find_or_create_person(name, Gender::FEMALE)
   end
 
+  # Creates the family of Queen Margaret and King Arthur.
+  #
+  # @return [Family] The created Family object.
   def create_queen_margaret_and_king_arthur_family
     queen_margaret = find_or_create_female('Queen Margaret')
     king_arthur = find_or_create_male('King Arthur')
@@ -57,6 +81,9 @@ class FamilyFactory
     Family.new(queen_margaret, king_arthur, [bill, charlie, percy, ronald, ginerva])
   end
 
+  # Creates the family of Flora and Bill.
+  #
+  # @return [Family] The created Family object.
   def create_flora_and_bill_family
     bill = find_or_create_male('Bill')
     flora = find_or_create_female('Flora')
@@ -70,6 +97,9 @@ class FamilyFactory
     Family.new(flora, bill, [victoire, dominique, louis])
   end
 
+  # Creates the family of Victoire and Ted.
+  #
+  # @return [Family] The created Family object.
   def create_victoire_and_ted_family
     victoire = find_or_create_female('Victoire')
     ted = find_or_create_male('Ted')
@@ -81,6 +111,9 @@ class FamilyFactory
     Family.new(victoire, ted, [remus])
   end
 
+  # Creates the family of Percy and Audrey.
+  #
+  # @return [Family] The created Family object.
   def create_percy_and_audrey_family
     percy = find_or_create_male('Percy')
     audrey = find_or_create_female('Audrey')
@@ -93,6 +126,9 @@ class FamilyFactory
     Family.new(audrey, percy, [molly, lucy])
   end
 
+  # Creates the family of Ronald and Helen.
+  #
+  # @return [Family] The created Family object.
   def create_ronald_and_helen_family
     ronald = find_or_create_male('Ronald')
     helen = find_or_create_female('Helen')
@@ -105,6 +141,9 @@ class FamilyFactory
     Family.new(helen, ronald, [rose, hugo])
   end
 
+  # Creates the family of Malfoy and Rose.
+  #
+  # @return [Family] The created Family object.
   def create_malfoy_and_rose_family
     malfoy = find_or_create_male('Malfoy')
     rose = find_or_create_female('Rose')
@@ -117,6 +156,9 @@ class FamilyFactory
     Family.new(rose, malfoy, [draco, aster])
   end
 
+  # Creates the family of Ginerva and Harry.
+  #
+  # @return [Family] The created Family object.
   def create_ginerva_and_harry_family
     ginerva = find_or_create_female('Ginerva')
     harry = find_or_create_male('Harry')
@@ -130,6 +172,9 @@ class FamilyFactory
     Family.new(ginerva, harry, [james, albus, lily])
   end
 
+  # Creates the family of Darcy and James.
+  #
+  # @return [Family] The created Family object.
   def create_darcy_and_james_family
     darcy = find_or_create_female('Darcy')
     james = find_or_create_male('James')
@@ -141,6 +186,9 @@ class FamilyFactory
     Family.new(darcy, james, [william])
   end
 
+  # Creates the family of Alice and Albus.
+  #
+  # @return [Family] The created Family object.
   def create_alice_and_albus_family
     alice = find_or_create_female('Alice')
     albus = find_or_create_male('Albus')

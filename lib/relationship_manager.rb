@@ -2,9 +2,18 @@
 
 require 'singleton'
 
+# RelationshipManager class to manage relationships between people.
+# This class follows the Singleton pattern to ensure there is only one instance
+# of the relationship manager throughout the application.
 class RelationshipManager
   include Singleton
 
+  # Links two people as spouses.
+  #
+  # @param person1 [Person] The first person to link.
+  # @param person2 [Person] The second person to link.
+  # @raise [RuntimeError] if either person is already linked to someone else.
+  # @return [void]
   def link_spouses(person1, person2)
     # Check if either person is already linked to someone else
     if person1.spouse != NilPerson.new && person1.spouse != person2
