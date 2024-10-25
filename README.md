@@ -75,30 +75,24 @@ Based on the family tree, here are the expected outputs for commoon scenarios:
 
 ## Approach
 
+The implementation of this project follows a structured approach:
+
+- **Testing**: All tests are written using RSpec.
+- **Main Entrypoint**: The application is launched via `./bin/family_tree.rb`.
+- **Command Line Interface**: Arguments are handled by the `CLI` class, which passes the actions file to the `ActionFileExecutor`.
+- **Action Processing**: The `ActionFileExecutor` processes the actions file line by line, executing each action using the `FamilyTree`.
+- **FamilyTree**: The `FamilyTree` singleton maintains a single instance of all families and exposes the `add_child` and `get_relationship` methods.
+- **NilPerson Class**: The `NilPerson` class follows the Null Object pattern, providing a default, non-intrusive representation of a person when a real instance is not available. This helps avoid null checks throughout the application and simplifies code that interacts with `Person` objects.
+
 ### Data Model
 
 The data model revolves around four primary classes: `FamilyTree`, `FamilyFactory`, `Family`, and `Person`.
 
-#### `FamilyTree`
-
-Represents the entire family tree and ensures a single instance throughout the application using the Singleton pattern.\\
-It manages a collection of `Family` objects and the retrieval of various family relationships such as parents, uncles, aunts, and children.
-
-#### `FamilyFactory`
-
-Responsible for creating and initializing predefined families. It uses helper methods to find or create individuals and establish relationships between them.
-
-#### `RelationshipManager`
-
-Manages the relationships between individuals, ensuring that connections like spouses, parents, and siblings are correctly established and maintained.
-
-#### `Family`
-
-Represents a family unit which is made up of a mother (`Person`), father (`Person`), and children (an array of `Person` objects).
-
-#### `Person`
-
-Represents an individual within the family tree, holding personal information and a reference to their spouse. A `Person` can exist in multiple families - as a **child** of one and as a **parent** (mother or father) of another.
+- The `FamilyTree` follows the singleton pattern and provides functions for querying and modifying the family structure.
+- The `FamilyFactory` uses the factory pattern to populate the `FamilyTree` during instantiation.
+- The `Family` represents a unit comprising a mother, a father, and their children.
+- A `Person` belongs to a `Family` and can appear as a child or as a parent (mother or father).
+- A `Person` can be linked to another `Person` via the `spouse` attribute.
 
 ## Dependencies
 
