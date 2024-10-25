@@ -7,8 +7,7 @@ require_relative 'gender'
 # FamilyFactory class to create initial families for the FamilyTree.
 # The primary purpose of this class is to create and initialize predefined families.
 class FamilyFactory
-  # Initializes a new FamilyFactory object.
-  # Sets up a hash to store people and gets the singleton instance of RelationshipManager.
+  # Initializes the new FamilyFactory instance.
   def initialize
     @people = {}
   end

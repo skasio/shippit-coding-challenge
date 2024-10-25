@@ -2,10 +2,7 @@
 
 # Gender class to handle gender-related operations.
 class Gender
-  # Constant representing male gender.
   MALE = 'male'
-
-  # Constant representing female gender.
   FEMALE = 'female'
 
   # Returns all defined genders.
