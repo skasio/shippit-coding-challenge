@@ -18,12 +18,13 @@ Example: `./ruby family_tree.rb /path/to/actions.txt`
 **Supported Genders**
 
 - `MALE`
-- `FEMAL`
+- `FEMALE`
 
 **Supported Relationship Types**
 
 - `MOTHER`
 - `FATHER`
+- `SIBLING`
 - `SIBLINGS`
 - `CHILD`
 - `DAUGHTER`
@@ -72,6 +73,13 @@ Based on the family tree, here are the expected outputs for commoon scenarios:
 | `GET_RELATIONSHIP "Betty" "Child"`              | `PERSON_NOT_FOUND`      | Betty doesn't exist         |
 | `GET_RELATIONSHIP "King Arthur" "Pets"`         | _no output_             | Invalid relationship type   |
 | `GET_RELATIONSHIP "King Arthur"`                | _no output_             | Invalid number of arguments |
+
+## Assumptions
+
+- Both quoted and unquoted action parameters are supported, as seen in the provided examples.
+- Invalid actions and relationships produce no output, as this behavior was not documented. This prevents failures in a test harness due to unexpected output.
+- While most relationship types are singular, `SIBLINGS` is kept plural to ensure compatibility with existing tests.
+- Although relationship types are defined as singular, the `GET_RELATIONSHIP` action may return multiple values. This makes sense since it queries for all individuals related by the specified type.
 
 ## Approach
 

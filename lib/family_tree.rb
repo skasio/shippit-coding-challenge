@@ -67,7 +67,7 @@ class FamilyTree
     case relationship.downcase
     when 'mother', 'father'
       handle_parent_relationship(child_of_family, relationship)
-    when 'siblings'
+    when 'siblings', 'sibling'
       handle_siblings_relationship(child_of_family, name)
     when 'child', 'daughter', 'son'
       handle_children_relationship(parent_of_family, relationship)

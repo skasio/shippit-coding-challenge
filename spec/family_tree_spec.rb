@@ -67,10 +67,12 @@ RSpec.describe FamilyTree do
 
     context 'finding siblings' do
       it 'returns sibling\'s name if present' do
-        expect(FamilyTree.instance.get_relationship('Draco', 'siblings')).to eq('Aster')
+        expect(FamilyTree.instance.get_relationship('Draco', 'sibling')).to eq('Aster')
+        expect(FamilyTree.instance.get_relationship('Draco', 'sibling')).to eq('Aster')
       end
 
       it 'returns NONE if there are no siblings' do
+        expect(FamilyTree.instance.get_relationship('Remus', 'sibling')).to eq('NONE')
         expect(FamilyTree.instance.get_relationship('Remus', 'siblings')).to eq('NONE')
       end
     end
