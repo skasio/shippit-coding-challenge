@@ -46,7 +46,6 @@ Based on the family tree of King Arthur and Queen Margaret, here is an example a
 ```txt
 # Adding Children
 ADD_CHILD "Queen Margaret" "Jonathan" "Male"
-ADD_CHILD Ginerva "St John" "Male"
 
 # Getting relationships
 GET_RELATIONSHIP Remus Maternal-Aunt
