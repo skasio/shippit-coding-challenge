@@ -35,9 +35,12 @@ class FamilyTree
   # @return [String] 'CHILD_ADDED' if the child is added successfully, 'CHILD_ADDITION_FAILED' otherwise.
   def add_child(mothers_name, name, gender)
     result = find_person_in_families(mothers_name)
+    parent = result[:person]
     parent_of_family = result[:parent_of_family]
 
-    return 'CHILD_ADDITION_FAILED' if parent_of_family.nil? || parent_of_family.mother.is_a?(NilPerson)
+    if parent_of_family.nil? || parent_of_family.mother.is_a?(NilPerson) || parent_of_family.father.eql?(parent)
+      return 'CHILD_ADDITION_FAILED'
+    end
 
     return 'CHILD_ADDITION_FAILED' if parent_of_family.children.any? { |child| child.name.casecmp(name).zero? }
 
