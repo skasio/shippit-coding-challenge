@@ -43,7 +43,7 @@ Blank lines and lines starting with `#` are ignored.
 
 Based on the family tree of King Arthur and Queen Margaret, here is an example action file:
 
-```txt
+```
 # Adding Children
 ADD_CHILD "Queen Margaret" "Jonathan" "Male"
 
