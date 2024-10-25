@@ -38,6 +38,8 @@ class FamilyTree
     parent = result[:person]
     parent_of_family = result[:parent_of_family]
 
+    return 'PERSON_NOT_FOUND' if parent.is_a?(NilPerson)
+
     if parent_of_family.nil? || parent_of_family.mother.is_a?(NilPerson) || parent_of_family.father.eql?(parent)
       return 'CHILD_ADDITION_FAILED'
     end
@@ -82,7 +84,7 @@ class FamilyTree
     when 'brother-in-law'
       handle_brother_in_law_relationship(person, child_of_family)
     else
-      'UNSUPPORTED_RELATIONSHIP'
+      false
     end
   end
 
@@ -130,7 +132,7 @@ class FamilyTree
       daughters = children.select { |child| child.gender == Gender::FEMALE }
       daughters.empty? ? 'NONE' : daughters.map(&:name).join(' ')
     else
-      'UNSUPPORTED_RELATIONSHIP'
+      false
     end
   end
 

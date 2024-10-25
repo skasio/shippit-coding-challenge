@@ -72,7 +72,8 @@ class ActionFileExecutor
     when 'ADD_CHILD'
       puts FamilyTree.instance.add_child(*params)
     when 'GET_RELATIONSHIP'
-      puts FamilyTree.instance.get_relationship(*params)
+      result = FamilyTree.instance.get_relationship(*params)
+      result && puts(result)
     end
   end
 

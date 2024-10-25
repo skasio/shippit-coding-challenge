@@ -51,10 +51,10 @@ RSpec.describe FamilyTree do
     end
 
     context 'when the mother is not present' do
-      it 'fails to add a child and returns CHILD_ADDITION_FAILED' do
+      it 'fails to add a child and returns PERSON_NOT_FOUND' do
         FamilyTree.instance.families.clear # Clear existing families
         result = FamilyTree.instance.add_child('Unknown Mother', 'Charlie', Gender::MALE)
-        expect(result).to eq('CHILD_ADDITION_FAILED')
+        expect(result).to eq('PERSON_NOT_FOUND')
       end
     end
   end
@@ -149,8 +149,8 @@ RSpec.describe FamilyTree do
     end
 
     context 'invalid relationships' do
-      it 'returns UNSUPPORTED_RELATIONSHIP for unsupported types' do
-        expect(FamilyTree.instance.get_relationship('Anna', 'uncle')).to eq('UNSUPPORTED_RELATIONSHIP')
+      it 'returns false for unsupported types' do
+        expect(FamilyTree.instance.get_relationship('Anna', 'uncle')).to eq(false)
       end
     end
   end
